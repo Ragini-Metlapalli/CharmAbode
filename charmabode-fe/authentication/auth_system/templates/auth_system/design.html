@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Three.js Table and Chair</title>
+  {% load static%}
+  <link rel="stylesheet" href="{% static 'css/design.css' %}" />
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+    #sidebar {
+      position: fixed; 
+      top: 0;
+      left: 0;
+      width: 310px; 
+      height: 100%;
+      background-color: rgb(229, 203, 251);
+      overflow-y: scroll; 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px 0;
+    }
+    #sidebar img {
+      width: 280px;
+      height: 280px;
+      cursor: pointer;
+      margin-top: 50px; 
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <input type ="checkbox" name ="" id ="chk1">
+    <div class="logo"><h1>CharmAbode</h1></div>
+    <ul>
+      <li><a href="/home/">Home</a></li>
+      <li><a href="/design/">Design</a></li>
+      <li><a href="#">About us</a></li>
+      <li><a href="/contact/">Contact</a></li>
+      {% if user.is_authenticated %}
+          <li style = "color: white">{{ user.username }}</li>
+          <li><a href="/logout/">Logout</a></li> 
+      {% endif %}
+    <li>
+      <button onclick="saveDesign()">Save</button>
+      <!-- <button onclick="loadDesigns()" style="color: white;">Load Designs</button> -->
+      <button onclick="clearDesign()" >Clear</button>
+    
+    </li>
+    </ul>
+  <div class="menu">
+<label for="chk1">
+  <i class="fa fa-bars"></i>
+</label>
+</div>
+</header>
+
+<div id="sidebar">
+<img src="{% static 'img/isometric_room-removebg-preview.png' %}" onclick="generateObject(generateRoom)">
+<img src="{% static 'img/table_side.jpeg' %}" onclick="generateObject(generateChair)">
+<img src="{% static 'img/chair_side.jpeg' %}" onclick="generateObject(generateTable)">
+<img src="{% static 'img/bed_side.jpeg' %}" onclick="generateObject(generateBed)">
+<img src="{% static 'img/cupboard_side.jpeg' %}" onclick="generateObject(generateCupboard)">
+<img src="{% static 'img/stool_side.jpeg' %}" onclick="generateObject(generateStool)">
+<img src="{% static 'img/sofa_side.jpeg' %}" onclick="generateObject(generateSofa)">
+</div>
+  <script src="https://threejs.org/build/three.min.js"></script>
+  <script src="{% static 'objects/room.js' %}"></script>
+  <script src="{% static 'objects/table.js' %}"></script>
+  <script src="{% static 'objects/chair.js' %}"></script>
+  <script src="{% static 'objects/bed.js' %}" ></script>
+  <script src="{% static 'objects/cupboard.js' %}"></script>
+  <script src="{% static 'objects/stool.js' %}" ></script>
+  <script src="{% static 'objects/sofa.js' %}" ></script>
+  <script>
+//     let scene, camera, renderer;
+//     const generatedObjects = [];
+
+//     // Variables for dragging
+//     let selectedObject = null;
+//     let offsetX = 0;
+//     let offsetY = 0;
+
+//     function init() {
+//       // Set up the scene, camera, and renderer
+//       scene = new THREE.Scene();
+//       camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+//       renderer = new THREE.WebGLRenderer();
+//       renderer.setSize(window.innerWidth, window.innerHeight);
+//       document.body.appendChild(renderer.domElement);
+
+//       // Set up the camera position
+//       camera.position.z = 10;
+
+//       // Add some lighting to the scene
+//       const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+//       scene.add(ambientLight);
+
+//       const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+//       directionalLight.position.set(1, 1, 1);
+//       scene.add(directionalLight);
+
+//       // Add event listeners for dragging
+//       renderer.domElement.addEventListener("mousedown", onDocumentMouseDown, false);
+//       renderer.domElement.addEventListener("mousemove", onDocumentMouseMove, false);
+//       renderer.domElement.addEventListener("mouseup", onDocumentMouseUp, false);
+//     }
+
+//     function generateObject(fn) {
+//       fn(scene);
+//     }
+
+//     function clearGeneratedObjects() {
+//       generatedObjects.forEach((object) => {
+//         scene.remove(object);
+//       });
+//       generatedObjects.length = 0;
+//     }
+
+
+//     function animate() {
+//       requestAnimationFrame(animate);
+//       renderer.render(scene, camera); 
+//     }
+
+//     // Function to handle object selection and start dragging
+//     function onDocumentMouseDown(event) {
+//       event.preventDefault();
+
+//       const mouse = new THREE.Vector2(
+//         (event.clientX / window.innerWidth) * 2 - 1,
+//         -(event.clientY / window.innerHeight) * 2 + 1
+//       );
+
+//       const raycaster = new THREE.Raycaster();
+//       raycaster.setFromCamera(mouse, camera);
+
+//       const intersects = raycaster.intersectObjects(scene.children, true);
+
+//       if (intersects.length > 0) {
+//         // Find the top-level parent (the group) of the clicked object
+//         selectedObject = intersects[0].object;
+//         while (selectedObject.parent !== scene) {
+//           selectedObject = selectedObject.parent;
+//         }
+
+//         // Calculate the offset between the clicked point and the group's position
+//         const intersectPoint = intersects[0].point;
+//         offsetX = intersectPoint.x - selectedObject.position.x;
+//         offsetY = intersectPoint.y - selectedObject.position.y;
+//       }
+//     }
+
+//     // Function to handle dragging
+//     function onDocumentMouseMove(event) {
+//       event.preventDefault();
+
+//       if (selectedObject) {
+//         const mouse = new THREE.Vector2(
+//           (event.clientX / window.innerWidth) * 2 - 1,
+//           -(event.clientY / window.innerHeight) * 2 + 1
+//         );
+
+//         const raycaster = new THREE.Raycaster();
+//         raycaster.setFromCamera(mouse, camera);
+
+//         const intersectPoint = new THREE.Vector3();
+//         raycaster.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), intersectPoint);
+
+//         // Update the group's position based on the mouse movement
+//         selectedObject.position.x = intersectPoint.x - offsetX;
+//         selectedObject.position.y = intersectPoint.y - offsetY;
+//       }
+//     }
+
+//     // Function to stop dragging when mouse is released
+//     function onDocumentMouseUp(event) {
+//       // Set selectedObject to null only if there is no intersection
+//       const mouse = new THREE.Vector2(
+//         (event.clientX / window.innerWidth) * 2 - 1,
+//         -(event.clientY / window.innerHeight) * 2 + 1
+//       );
+
+//       const raycaster = new THREE.Raycaster();
+//       raycaster.setFromCamera(mouse, camera);
+
+//       const intersects = raycaster.intersectObjects(scene.children, true);
+
+//       if (intersects.length === 0) {
+//         selectedObject = null;
+//       }
+//     }
+
+//     init();
+//     animate();
+let scene, camera, renderer;
+    const generatedObjects = [];
+
+    // Variables for dragging
+    let selectedObject = null;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    //const backgroundImage = new THREE.TextureLoader().load('room_background2.png'); 
+
+    function init() {
+      // Set up the scene, camera, and renderer
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Set up the camera position
+      camera.position.z = 10;
+
+      // Add some lighting to the scene
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(1, 1, 1);
+      scene.add(directionalLight);
+
+      // Add event listeners for dragging
+      renderer.domElement.addEventListener("mousedown", onDocumentMouseDown, false);
+      renderer.domElement.addEventListener("mousemove", onDocumentMouseMove, false);
+      renderer.domElement.addEventListener("mouseup", onDocumentMouseUp, false);
+    }
+
+    function generateObject(fn) {
+      fn(scene);
+    }
+
+    function clearGeneratedObjects() {
+      generatedObjects.forEach((object) => {
+        scene.remove(object);
+      });
+      generatedObjects.length = 0;
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera); 
+    }
+
+    // Function to handle object selection and start dragging
+    function onDocumentMouseDown(event) {
+      event.preventDefault();
+
+      const mouse = new THREE.Vector2(
+        (event.clientX / window.innerWidth) * 2 - 1,
+        -(event.clientY / window.innerHeight) * 2 + 1
+      );
+
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, camera);
+
+      const intersects = raycaster.intersectObjects(scene.children, true);
+
+      if (intersects.length > 0) {
+        //selectedObject = intersects[0].object;
+        let clickedObject = intersects[0].object;
+        while (clickedObject.parent !== scene) {
+          clickedObject = clickedObject.parent;
+        }
+        console.log(clickedObject);
+        if (clickedObject.userData && clickedObject.userData.type === 'room') {
+            return;
+        }
+
+    // Set selectedObject to the clicked object for dragging
+        selectedObject = clickedObject;
+        const intersectPoint = intersects[0].point;
+        offsetX = intersectPoint.x - selectedObject.position.x;
+        offsetY = intersectPoint.y - selectedObject.position.y;
+      }
+    }
+
+    // Function to handle dragging
+    function onDocumentMouseMove(event) {
+      event.preventDefault();
+
+      if (selectedObject) {
+        const mouse = new THREE.Vector2(
+          (event.clientX / window.innerWidth) * 2 - 1,
+          -(event.clientY / window.innerHeight) * 2 + 1
+        );
+
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(mouse, camera);
+
+        const intersectPoint = new THREE.Vector3();
+        raycaster.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), intersectPoint);
+
+        // Update the group's position based on the mouse movement
+        selectedObject.position.x = intersectPoint.x - offsetX;
+        selectedObject.position.y = intersectPoint.y - offsetY;
+      }
+    }
+
+    // Function to stop dragging when mouse is released
+    function onDocumentMouseUp(event) {
+      // Set selectedObject to null only if there is no intersection
+      const mouse = new THREE.Vector2(
+        (event.clientX / window.innerWidth) * 2 - 1,
+        -(event.clientY / window.innerHeight) * 2 + 1
+      );
+
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, camera);
+
+      const intersects = raycaster.intersectObjects(scene.children, true);
+
+      //if (intersects.length === 0) {
+        selectedObject = null;
+      //}
+    }
+    init();
+    animate();
+    </script>
+    <script>
+      function clearDesign() {
+  // Display a confirmation dialog
+  const userConfirmation = confirm("Do you want to clear the design?");
+
+  // Check if the user clicked "OK"
+  if (userConfirmation) {
+    clearGeneratedObjects();
+
+    // Remove all objects from the scene
+    while (scene.children.length > 0) {
+      scene.remove(scene.children[0]);
+    }
+
+    // Reset the camera position
+    camera.position.set(0, 0, 10);
+    camera.lookAt(0, 0, 0);
+
+    // Render the scene to reflect the changes
+    renderer.render(scene, camera);
+
+    init();
+    addEventListeners(); // Add this line to re-add event listeners
+    animate();
+  }
+}
+function addEventListeners() {
+  renderer.domElement.addEventListener("mousedown", onDocumentMouseDown, false);
+  renderer.domElement.addEventListener("mousemove", onDocumentMouseMove, false);
+  renderer.domElement.addEventListener("mouseup", onDocumentMouseUp, false);
+}
+    function saveDesign() {
+    
+    const designData = [];
+    scene.traverse((object) => {
+      if (object instanceof THREE.Mesh || object instanceof THREE.Group) {
+        const objectData = {
+          //type: object.userData.type,
+          name: object.name,
+          position: object.position.clone(),
+          rotation: object.rotation.clone(),
+          scale: object.scale.clone(),
+        };
+        
+        designData.push(objectData);
+      }
+      console.log("designData: in save", designData);
+    });
+
+    const designName = prompt("Enter a name for your design:");
+
+    if (designName) {
+      const designs = JSON.parse(localStorage.getItem('designs')) || [];
+      designs.push({ name: designName, data: JSON.stringify(designData) });
+      localStorage.setItem('designs', JSON.stringify(designs));
+      alert("Design saved successfully!");
+    }
+  }
+    // init();
+    // animate();
+  </script>
+</body>
+</html> 

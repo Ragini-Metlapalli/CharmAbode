@@ -1,0 +1,58 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1.0">
+        <title></title>
+        {% load static %}
+        <link rel = "stylesheet" href="{% static 'css/style-index.css' %}"/>
+        <link rel="stylesheet" href="{% static 'css/global.css' %}" />
+        <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Italianno"
+    />
+    <link
+      rel="stylesheet" href = "https://fonts.googleapis.com/css?family=Lilita One">
+    </head>
+    <body>
+        {% csrf_token %}
+        <div class = "caption">
+        From  empty  space  to  perfect  place: It’s  your  creation
+        </div>
+        <div class="big">
+            <div class = "small-img">
+                <img src = "{% static 'img/1.jpeg' %}">
+            </div>
+            <div class = "small-img">
+                <img src = "{% static 'img/2.jpeg' %}">
+            </div>
+            <div class = "small-img">
+                <img src = "{% static 'img/3.jpeg' %}">
+            </div>
+            <div class = "small-img">
+                <img src = "{% static 'img/4.jpeg' %}">
+            </div>
+            <div class = "small-img">
+                <img src = "{% static 'img/5.jpeg' %}">
+            </div>
+            <div class = "small-img">
+                <img src = "{% static 'img/6.jpeg' %}">
+            </div>
+            <div class = "small-img">
+                <img src = "{% static 'img/7.jpeg' %}">
+            </div>
+            <div class = "small-img">
+                <img src = "{% static 'img/8.jpeg' %}">
+            </div>
+            <div class = "small-img">
+                <img src = "{% static 'img/9.jpeg' %}">
+            </div>
+        </div>
+       <button id="get-started-button">Get Started</button>
+
+    <script>
+        document.getElementById("get-started-button").addEventListener("click", function() {
+            window.location.href = "/auth/";
+        });
+    </script>
+    </body>
+</html>

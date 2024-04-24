@@ -1,0 +1,11 @@
+body {
+    margin: 0;
+    line-height: normal;
+  }
+  
+  :root {
+    /* fonts */
+    --font-jockey-one: "Jockey One";
+    --font-italianno: Italianno;
+  }
+  
